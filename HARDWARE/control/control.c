@@ -3,7 +3,7 @@
 int Balance_Pwm, Velocity_Pwm, Turn_Pwm;
 float Mechanical_balance = -6; // 機械平衡角度
 
-float balance_UP_KP = 280; 	   // 直立迴路 KP
+float balance_UP_KP = 280;     // 直立loop KP
 float balance_UP_KD = 0.8;
 
 float velocity_KP = 90;
@@ -27,10 +27,10 @@ void EXTI9_5_IRQHandler(void)
 			Voltage = Get_battery_volt();          // 讀取電池電壓		
 			UltrasonicWave_StartMeasure();         // 超音波距離數據
 		}
-		Balance_Pwm = balance_UP(pitch, Mechanical_balance, gyroy); // 直立PD迴路
-		Velocity_Pwm = velocity(Encoder_Left, Encoder_Right);       // 速度PI迴路	 
-  		if(Flag_Left || Flag_Right)    
-			Turn_Pwm = turn(Encoder_Left, Encoder_Right, gyroz);    // 轉向PD迴路
+		Balance_Pwm = balance_UP(pitch, Mechanical_balance, gyroy); // 直立loop
+		Velocity_Pwm = velocity(Encoder_Left, Encoder_Right);       // 速度loop	 
+  		if(Flag_Left || Flag_Right)
+			Turn_Pwm = turn(Encoder_Left, Encoder_Right, gyroz);    // 轉向loop
 		else Turn_Pwm = (-0.5) * gyroz;
 		Moto1 = Balance_Pwm - Velocity_Pwm - Turn_Pwm;              // 左側馬達PWM計算結果
 		Moto2 = Balance_Pwm - Velocity_Pwm + Turn_Pwm;              // 右側馬達PWM計算結果
@@ -47,7 +47,7 @@ int balance_UP(float Angle, float Mechanical_balance, float Gyro)
 	float Bias;
 	int balance;
 	Bias = Angle - Mechanical_balance; // 求出與機械平衡角度差值
-	// 直立PD迴路
+	// 直立loop (PD)
 	balance = balance_UP_KP * Bias + balance_UP_KD * Gyro;
 	return balance;
 }
@@ -78,10 +78,10 @@ int velocity(int encoder_left, int encoder_right)
 		flag_UltrasonicWave = 0;
 		Movement = 0;
 	}
-	// 速度PI迴路
+	// 速度loop (PI)
 	Encoder_Least = (Encoder_Left + Encoder_Right) - 0;      // 最新速度差值 ＝ 測量速度(左右編碼器之和) - 目標速度(0) 
-	Encoder *= 0.8;		                                     // LPF       
-	Encoder += Encoder_Least * 0.2;	                         // LPF 降低速度差值對直立迴路影響
+	Encoder *= 0.8;                                          // LPF       
+	Encoder += Encoder_Least * 0.2;                          // LPF 降低速度差值對直立loop影響
 	Encoder_Integral += Encoder;                             // 積分出位移 t = 10ms
 	Encoder_Integral = Encoder_Integral - Movement;          // 藍芽數據 控制前進後退
 	if(Encoder_Integral > 10000) Encoder_Integral = 10000;   // 限制速度最大上限
@@ -118,7 +118,7 @@ int turn(int encoder_left, int encoder_right, float gyro)
 	if(Turn_Target < -Turn_Amplitude) Turn_Target = -Turn_Amplitude;
 	if(Flag_Forward == 1 || Flag_Backward == 1) Kd = 0.5;        
 	else Kd = 0; // 轉向時取消根據陀螺儀數據的修正
-	// 轉向PD迴路
+	// 轉向loop (PD)
 	Turn = - Turn_Target * Kp - gyro * Kd; // 結合陀螺儀Z軸數據計算
 	return Turn;
 }
