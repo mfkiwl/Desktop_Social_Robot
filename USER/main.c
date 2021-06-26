@@ -37,7 +37,7 @@ int main(void)
 /********************************************************************************/
     Encoder_Init_TIM2();           // 馬達編碼器2初始化
     Encoder_Init_TIM4();           // 馬達編碼器4初始化
-    Timer3_Init(5000,7199);	       // 超音波計算距離用計時器初始化
+    Timer3_Init(5000,7199);        // 超音波計算距離用計時器初始化
     MPU_Init();                    // MPU6050 陀螺儀/加速度模組初始化
     mpu_dmp_init();                // MPU6050 DMP 功能初始化
     UltrasonicWave_Configuration();       // 超音波 GPIO 設定初始化

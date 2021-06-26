@@ -1,6 +1,6 @@
 #include "usart3.h"
 void uart3_init(u32 bound)
-{  	 
+{       
     // GPIO 端口設定
     GPIO_InitTypeDef GPIO_InitStructure;
     USART_InitTypeDef USART_InitStructure;
@@ -14,7 +14,7 @@ void uart3_init(u32 bound)
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;   // 端口工作模式設定
     GPIO_Init(GPIOB, &GPIO_InitStructure);
 
-    // USART3_RX	  
+    // USART3_RX      
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;            // PB.11
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING; // 端口工作模式設定
     GPIO_Init(GPIOB, &GPIO_InitStructure);
@@ -33,42 +33,42 @@ void uart3_init(u32 bound)
 
 // UART 3 接收中斷函式
 void USART3_IRQHandler(void)
-{	
+{    
     if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET) // 接收到數據
-	{	  
-		static int uart_receive = 0; // 儲存藍芽接收數據
-		uart_receive = USART_ReceiveData(USART3); 
-		if(uart_receive == 0x00)                                                      // 停
-		    Flag_Forward = 0, Flag_Backward = 0, Flag_Left = 0, Flag_Right = 0;
-		else if(uart_receive == 0x01)                                                 // 前
-		    Flag_Forward = 1, Flag_Backward = 0, Flag_Left = 0, Flag_Right = 0;
-		else if(uart_receive == 0x05)                                                 // 後	
-		    Flag_Forward = 0, Flag_Backward = 1, Flag_Left = 0, Flag_Right = 0;
-		else if(uart_receive == 0x02 || uart_receive==0x03 || uart_receive == 0x04)   // 右
-		    Flag_Forward = 0, Flag_Backward = 0, Flag_Left = 0, Flag_Right = 1;  
-		else if(uart_receive == 0x06 || uart_receive == 0x07 || uart_receive == 0x08) // 左
-		    Flag_Forward = 0, Flag_Backward = 0, Flag_Left = 1, Flag_Right = 0; 
-		else Flag_Forward = 0, Flag_Backward = 0, Flag_Left = 0, Flag_Right =0 ;      // 停
-	}  											 
+    {      
+    static int uart_receive = 0; // 儲存藍芽接收數據
+    uart_receive = USART_ReceiveData(USART3); 
+    if(uart_receive == 0x00)                                                          // 停
+        Flag_Forward = 0, Flag_Backward = 0, Flag_Left = 0, Flag_Right = 0;
+    else if(uart_receive == 0x01)                                                     // 前
+        Flag_Forward = 1, Flag_Backward = 0, Flag_Left = 0, Flag_Right = 0;
+    else if(uart_receive == 0x05)                                                     // 後    
+        Flag_Forward = 0, Flag_Backward = 1, Flag_Left = 0, Flag_Right = 0;
+    else if(uart_receive == 0x02 || uart_receive==0x03 || uart_receive == 0x04)       // 右
+            Flag_Forward = 0, Flag_Backward = 0, Flag_Left = 0, Flag_Right = 1;  
+        else if(uart_receive == 0x06 || uart_receive == 0x07 || uart_receive == 0x08) // 左
+            Flag_Forward = 0, Flag_Backward = 0, Flag_Left = 1, Flag_Right = 0; 
+        else Flag_Forward = 0, Flag_Backward = 0, Flag_Left = 0, Flag_Right =0 ;      // 停
+    }       
 } 
 
 // Uart 3 發送位元組
 void Uart3SendByte(char byte)   
 {
-	USART_SendData(USART3, byte); // 發送數據(stm32函式庫)
-	while(USART_GetFlagStatus(USART3,USART_FLAG_TC) != SET);  
-	// 等待發送完成 檢測 USART_FLAG_TC 
+    USART_SendData(USART3, byte); // 發送數據(stm32函式庫)
+    while(USART_GetFlagStatus(USART3,USART_FLAG_TC) != SET);  
+    // 等待發送完成 檢測 USART_FLAG_TC 
  }
 
 void Uart3SendBuf(char *buf, u16 len)
 {
-	u16 i;
-	for(i = 0; i < len; i++) Uart3SendByte(*buf++);
+    u16 i;
+    for(i = 0; i < len; i++) Uart3SendByte(*buf++);
 }
 
 void Uart3SendStr(char *str)
 {
-	u16 i,len;
-	len = strlen(str);
-	for(i = 0; i < len; i++) Uart3SendByte(*str++);
+    u16 i,len;
+    len = strlen(str);
+    for(i = 0; i < len; i++) Uart3SendByte(*str++);
 }
