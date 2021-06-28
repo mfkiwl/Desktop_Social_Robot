@@ -52,7 +52,6 @@ void USART3_IRQHandler(void)
     }       
 } 
 
-// Uart 3 發送位元組
 void Uart3SendByte(char byte)   
 {
     USART_SendData(USART3, byte); // 發送數據(stm32函式庫)
