@@ -33,14 +33,14 @@ void EXTI2_IRQHandler(void)
     {
         TIM_SetCounter(TIM3, 0);    
         TIM_Cmd(TIM3, ENABLE);                                // 啟動計時器3
-        while(GPIO_ReadInputDataBit(GPIOA, ECHO_PIN));        // 等待低電平
+        while(GPIO_ReadInputDataBit(GPIOA, ECHO_PIN));        // 等待低電位
         TIM_Cmd(TIM3, DISABLE);                               // 關閉計時器3
         UltrasonicWave_Distance = TIM_GetCounter(TIM3) * 1.7; // 計算距離
         EXTI_ClearITPendingBit(EXTI_Line2);                   // 清除 EXTI_Line2 外部中斷
     }
 }
 
-// 發送一個 > 10us 的脈衝 測量返回高電平時間
+// 發送一個 > 10us 的方波 測量返回高電位時間
 void UltrasonicWave_StartMeasure(void)
 {
     GPIO_SetBits(GPIOA, TRIG_PIN);
